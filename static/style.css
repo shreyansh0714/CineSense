@@ -1,0 +1,204 @@
+/* CineSense — responsive, mobile-first */
+:root {
+  --bg: #0f1117;
+  --panel: #181b25;
+  --panel-2: #1f2330;
+  --text: #e8e6e0;
+  --muted: #8a8fa3;
+  --accent: #e0a458;
+  --accent-dark: #b57f35;
+  --user-bubble: #2a3040;
+  --radius: 14px;
+  --font: Georgia, "Times New Roman", serif;
+  --font-ui: "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-ui);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  text-align: center;
+  padding: 2rem 1rem 0.5rem;
+}
+
+h1 {
+  font-family: var(--font);
+  font-size: 2.4rem;
+  margin: 0;
+  letter-spacing: 0.02em;
+}
+h1 span { color: var(--accent); font-style: italic; }
+
+.tagline {
+  color: var(--muted);
+  margin: 0.4rem 0 0;
+  font-style: italic;
+  font-family: var(--font);
+}
+
+main {
+  width: 100%;
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+  flex: 1;
+}
+
+/* ---------- intake form ---------- */
+.field-group { margin-bottom: 1.6rem; }
+
+label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+label em { color: var(--accent); font-style: italic; }
+.muted { color: var(--muted); font-weight: 400; font-size: 0.85rem; }
+
+input[type="text"], textarea {
+  width: 100%;
+  background: var(--panel);
+  border: 1px solid #2c3140;
+  border-radius: var(--radius);
+  color: var(--text);
+  padding: 0.7rem 0.9rem;
+  font-size: 0.95rem;
+  font-family: inherit;
+  resize: vertical;
+}
+input:focus, textarea:focus {
+  outline: 2px solid var(--accent-dark);
+  border-color: transparent;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.6rem;
+}
+.chip {
+  background: var(--panel-2);
+  color: var(--muted);
+  border: 1px solid #2c3140;
+  border-radius: 999px;
+  padding: 0.35rem 0.8rem;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.chip:hover { color: var(--text); border-color: var(--accent-dark); }
+
+.favorite {
+  background: var(--panel);
+  border: 1px solid #2c3140;
+  border-radius: var(--radius);
+  padding: 0.8rem;
+  margin-bottom: 0.8rem;
+}
+.favorite input, .favorite textarea {
+  background: var(--panel-2);
+  margin-bottom: 0.5rem;
+}
+.favorite textarea { margin-bottom: 0; }
+
+button.primary {
+  background: var(--accent);
+  color: #1a1408;
+  border: none;
+  border-radius: var(--radius);
+  padding: 0.8rem 1.6rem;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.15s;
+}
+button.primary:hover:not(:disabled) { background: #ecb96f; }
+button.primary:disabled { opacity: 0.5; cursor: wait; }
+
+/* ---------- chat view ---------- */
+#messages { margin-bottom: 1rem; }
+
+.msg {
+  border-radius: var(--radius);
+  padding: 0.9rem 1.1rem;
+  margin-bottom: 0.9rem;
+  line-height: 1.55;
+  font-size: 0.95rem;
+  overflow-wrap: break-word;
+}
+.msg.user {
+  background: var(--user-bubble);
+  margin-left: 15%;
+  white-space: pre-wrap;
+}
+.msg.assistant {
+  background: var(--panel);
+  border: 1px solid #2c3140;
+  margin-right: 5%;
+}
+.msg.assistant h2 {
+  font-family: var(--font);
+  font-size: 1.05rem;
+  color: var(--accent);
+  margin: 0.9em 0 0.3em;
+}
+.msg.assistant h2:first-child { margin-top: 0; }
+.msg.assistant strong { color: #fff; }
+.msg.error {
+  background: #3a1f24;
+  border: 1px solid #6e3540;
+  color: #f0c0c8;
+}
+
+.cursor::after {
+  content: "▋";
+  color: var(--accent);
+  animation: blink 1s step-end infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+
+#refine-form {
+  display: flex;
+  gap: 0.6rem;
+}
+#refine-input { flex: 1; }
+#refine-form button.primary { width: auto; padding: 0.7rem 1.3rem; }
+#refine-form button:disabled { opacity: 0.5; cursor: wait; }
+
+#restart-btn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  text-decoration: underline;
+  cursor: pointer;
+  margin-top: 1rem;
+  font-size: 0.85rem;
+}
+#restart-btn:hover { color: var(--text); }
+
+footer {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.75rem;
+  padding: 1rem;
+}
+
+/* ---------- desktop ---------- */
+@media (min-width: 720px) {
+  h1 { font-size: 3rem; }
+  main { padding-top: 2rem; }
+  button.primary { width: auto; }
+  #intake-form button.primary { width: 100%; }
+}

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CineSense — movies that read the room</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>Cine<span>Sense</span></h1>
+    <p class="tagline">Tell it how you feel, not what genre you want.</p>
+  </header>
+
+  <!-- ============ Intake view ============ -->
+  <main id="intake-view">
+    <form id="intake-form">
+      <section class="field-group">
+        <label for="mood">How are you feeling tonight? What's the situation?</label>
+        <textarea id="mood" rows="2" maxlength="1000" required
+          placeholder="e.g. completely fried after work, want something I don't have to think about"></textarea>
+        <div class="chips" id="mood-chips">
+          <button type="button" class="chip">Fried after a long day</button>
+          <button type="button" class="chip">Cozy night in</button>
+          <button type="button" class="chip">Something to argue about with friends</button>
+          <button type="button" class="chip">Background while I work</button>
+          <button type="button" class="chip">Date night</button>
+          <button type="button" class="chip">Want to feel something</button>
+        </div>
+      </section>
+
+      <section class="field-group">
+        <label>Two or three movies you loved — and <em>why</em>. The why is everything.</label>
+        <div class="favorite">
+          <input type="text" class="fav-title" maxlength="200" placeholder="Movie #1" required />
+          <textarea class="fav-why" rows="2" maxlength="1000"
+            placeholder="Why did it stick with you? (the ending, the pacing, one scene, the vibe...)"></textarea>
+        </div>
+        <div class="favorite">
+          <input type="text" class="fav-title" maxlength="200" placeholder="Movie #2" required />
+          <textarea class="fav-why" rows="2" maxlength="1000"
+            placeholder="Why did you love this one?"></textarea>
+        </div>
+        <div class="favorite">
+          <input type="text" class="fav-title" maxlength="200" placeholder="Movie #3 (optional)" />
+          <textarea class="fav-why" rows="2" maxlength="1000"
+            placeholder="Why? (optional)"></textarea>
+        </div>
+      </section>
+
+      <section class="field-group">
+        <label for="constraints">Any hard limits? <span class="muted">(optional)</span></label>
+        <input type="text" id="constraints" maxlength="500"
+          placeholder="e.g. no horror, under 2 hours, something on Netflix" />
+      </section>
+
+      <button type="submit" id="submit-btn" class="primary">Find my movie</button>
+    </form>
+  </main>
+
+  <!-- ============ Chat view ============ -->
+  <main id="chat-view" hidden>
+    <div id="messages"></div>
+    <form id="refine-form">
+      <input type="text" id="refine-input" maxlength="2000" autocomplete="off"
+        placeholder='React naturally — "too heavy", "similar but shorter", "seen it"...' />
+      <button type="submit" id="refine-btn" class="primary">Send</button>
+    </form>
+    <button id="restart-btn" type="button">Start over</button>
+  </main>
+
+  <footer>
+    <p>Powered by Gemini · conversation state lives on the server, your key never touches the browser</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
