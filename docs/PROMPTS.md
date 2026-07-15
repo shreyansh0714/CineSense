@@ -78,3 +78,22 @@ make refinement turns (plain free text) visually distinct in the history.
 - Test whether the model respects "never repeat a suggestion" over 5+ refinement turns; if not, have the backend inject a list of already-suggested titles.
 - A/B the ~250-word cap: does a tighter cap hurt the reasoning section?
 - Consider asking the model to end refinement turns with one question when feedback is ambiguous ("lighter how — funnier, or lower stakes?").
+
+## Testing log (live edge-case observations)
+
+Behaviors observed while testing the running app (local container + the live
+deployment at https://13-60-161-144.nip.io). These validate the prompt design;
+add more rows as you and Arnav probe further.
+
+| # | Input given | Behavior observed | Verdict |
+|---|---|---|---|
+| T1 | Mood "fried after a 10-hour shift"; favorites Whiplash (obsession) + Paddington 2 (warmth); limit under 2h | Gated on mood: named the exhaustion, leaned to the *warmth* side of the taste, picked a light film with runtime + service caveat. Reasoning streamed before the pick. | ✅ Mood-vs-taste rule works |
+| T2 | Favorite listed as **"Chef"** but *described* as "thrilling, great twist where she ordered the burger for takeout" (this is actually *The Menu*, 2022) | Model detected the title/description mismatch and **gently corrected it** — "*The Menu* (which you called *Chef*)" — then reasoned from the real film. | ✅ Extracts signal from the "why", not just the title — strong evidence the prompt reads the description, not keywords |
+| T3 | Mood "something to argue about with friends"; favorites Spider-Man + Project Hail Mary; limits Netflix/Prime/Hotstar | Read the taste as "concept-driven, high-engagement", **re-framed toward debate-bait** (ambiguous-truth narrative), picked *Anatomy of a Fall* with a *The Platform* backup — both fitting the "argue" mood and the streaming constraints. | ✅ Mood reframing + constraint respect |
+
+### Edge cases still to probe (task 2 checklist)
+- **Vague mood** ("idk, whatever") — does it ask one clarifying question or guess?
+- **Contradictory taste** ("I love slow cinema" + "I get bored easily") — how does it reconcile?
+- **Constraint violation pressure** — a perfect fit that breaks a hard limit; does it hold the line?
+- **Many refinement turns (5+)** — does it ever repeat a suggestion? (see queued idea above)
+- **Empty/unusable taste profile** — does it fall back to a friendly clarifying question?

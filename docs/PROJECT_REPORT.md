@@ -100,7 +100,7 @@ and any resulting prompt revisions from the PROMPTS.md table)*
 | 3. Frontend | Responsive intake form + chat view, SSE parsing, progressive markdown rendering, refinement loop | Arnav |
 | 4. Containerization | Dockerfile (python:3.12-slim, port 8080), local Docker verification | Arnav |
 | 5. Deployment prep | Environment verification, Dockerfile fix, App Runner runbook — then revised to EC2 free tier after confirming App Runner isn't actually free ([`DEPLOYMENT.md`](DEPLOYMENT.md)) | Shreyansh |
-| 6. AWS deployment | EC2 free-tier instance, Elastic IP, Docker, Caddy + nip.io HTTPS, budget alert, end-to-end verification | Shreyansh — *(fill in date + URL)* |
+| 6. AWS deployment | EC2 t3.micro (eu-north-1) + Elastic IP, Docker, Caddy + nip.io HTTPS, $5 budget alert, end-to-end verified. **Live: https://13-60-161-144.nip.io** (15 Jul 2026) | Shreyansh |
 | 7. Testing & report | Edge-case prompt testing, revision log entries, this report | Shreyansh + Arnav |
 
 ## 6. Challenges & resolutions
@@ -113,8 +113,9 @@ and any resulting prompt revisions from the PROMPTS.md table)*
 | Stale `ANTHROPIC_API_KEY` comment in the Dockerfile (leftover from a template) while the app reads `GEMINI_API_KEY` | Caught in deployment prep review; fixed so the deploy docs and image agree |
 | **AWS App Runner, our original hosting choice, has no free tier** (~$2.5–3/month) — the course brief requires deployment at zero cost | Switched the plan to an AWS **EC2 free-tier instance** (750 free hrs/month, enough for one instance running continuously) before any money was spent; documented the full rationale in DEPLOYMENT.md §0 |
 | EC2 gives a raw IP, not a domain — but the brief expects a public **HTTPS** URL, and buying a domain costs money | Used a free `nip.io` hostname (resolves `<ip-with-dashes>.nip.io` back to the instance's IP) with Caddy as a reverse proxy, which gets a real, free Let's Encrypt certificate for that hostname automatically |
-| A stopped EC2 instance's Elastic IP quietly starts costing money (only free while attached to a *running* instance) | Documented as a specific gotcha in DEPLOYMENT.md §10; since 750 free hours/month covers one instance running 24/7, the simplest safe choice is to just leave it running rather than stop/start it |
-| *(fill in: real issues from the live deployment — DEPLOYMENT.md §11 table)* | |
+| **macOS blocked `chmod` on the SSH key** ("Operation not permitted") because it was in `~/Downloads`, a privacy-protected folder — couldn't set the `400` permission SSH requires | Moved the key to the home folder via Finder, then `chmod 400` succeeded and SSH connected (DEPLOYMENT.md §11) |
+| The AWS account used the **newer credit-based "free plan"**, not the classic 750-hour free tier we'd planned around | Confirmed in Billing: $120 credits, ~6 months — even the small EC2 + IPv4 charges are absorbed by credits, so still $0 out of pocket. Updated the deployment doc to describe the real model rather than the assumed one |
+| Installing Caddy as a system package on Amazon Linux (via COPR) is fragile across distros | Ran Caddy **as a second Docker container** with host networking instead — reused the working Docker install, one command, auto-manages the certificate and survives reboots |
 
 ## 7. Learnings
 

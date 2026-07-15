@@ -64,9 +64,10 @@ scroll it replaces.
 
 ## Deployment target
 
-Docker container on a free-tier **AWS EC2** instance (`t2.micro`/`t3.micro`),
+Docker container on a free-tier **AWS EC2** instance (`t3.micro`, eu-north-1),
 with a public HTTPS URL via Caddy + a free `nip.io` hostname — chosen
 specifically because it costs **$0**, unlike AWS App Runner which has no free
 tier. `GEMINI_API_KEY` is set only in the server-side `docker run` command,
-never in the repo; a $5/month budget alert is a safety net. Full procedure and
-rationale in [`docs/DEPLOYMENT.md`](DEPLOYMENT.md).
+never in the repo; a $5/month budget alert is a safety net. **Live at
+https://13-60-161-144.nip.io.** Full procedure and rationale in
+[`docs/DEPLOYMENT.md`](DEPLOYMENT.md).
