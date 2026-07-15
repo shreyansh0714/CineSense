@@ -11,7 +11,7 @@ FastAPI backend (Python) — in-memory conversation state per session
       │ server-side only, key in env var
 Gemini API (streaming)
       │
-Docker → AWS App Runner (public HTTPS URL)
+Docker → AWS EC2 (free tier, public HTTPS URL via Caddy + nip.io)
 ```
 
 ## Features → assignment requirements
@@ -50,44 +50,35 @@ docker build -t cinesense .
 docker run -p 8080:8080 -e GEMINI_API_KEY=your-key cinesense
 ```
 
-## Deploy to AWS App Runner
+## Deploy to AWS (EC2 free tier)
 
-App Runner runs a container behind a public HTTPS URL with no servers to manage.
-Two paths; ECR is the reliable one:
+**AWS App Runner has no free tier** (~$2.5–3/month) — since this project must
+deploy at **zero cost**, we run the container on a free-tier-eligible EC2
+instance instead, with free automatic HTTPS via Caddy + a
+[nip.io](https://nip.io) hostname (no domain purchase needed).
 
-### 1. Push the image to ECR
+**Full step-by-step runbook (exact commands, budget alert, verification
+checklist, troubleshooting): [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md).**
 
-```sh
-aws ecr create-repository --repository-name cinesense --region ap-south-1
-aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin <ACCOUNT_ID>.dkr.ecr.ap-south-1.amazonaws.com
-docker build -t cinesense .
-docker tag cinesense:latest <ACCOUNT_ID>.dkr.ecr.ap-south-1.amazonaws.com/cinesense:latest
-docker push <ACCOUNT_ID>.dkr.ecr.ap-south-1.amazonaws.com/cinesense:latest
-```
+Quick version:
 
-### 2. Create the App Runner service (Console)
-
-1. AWS Console → **App Runner** → *Create service*
-2. Source: **Container registry / Amazon ECR** → pick the `cinesense:latest` image
-3. Deployment: manual (free-tier friendly) — redeploy by pushing a new image
-4. Service settings: **Port 8080**, smallest instance (0.25 vCPU / 0.5 GB is plenty)
-5. **Environment variables → add `GEMINI_API_KEY`** with your key
-   (this is the "no keys in code" requirement — the key lives only in service config)
-6. Create → wait for the green *Running* state → copy the `https://xxxx.awsapprunner.com` URL
-7. Smoke test: open `<url>/api/health`, then run a full recommendation flow
-
-### 3. Budget alert (required by the brief)
-
-AWS Console → **Billing → Budgets → Create budget** → Cost budget → e.g. $5/month
-→ email alert at 80%. Do this *before* leaving the service running.
+1. Launch a `t2.micro`/`t3.micro` EC2 instance (Amazon Linux 2023, free-tier eligible), open ports 22/80/443
+2. Allocate + associate an Elastic IP (free while attached to a running instance)
+3. SSH in, install Docker, `git clone` this repo, `docker build -t cinesense .`
+4. `docker run -d --name cinesense --restart unless-stopped -p 127.0.0.1:8080:8080 -e GEMINI_API_KEY=your-key cinesense`
+   (bound to localhost — the key lives only in this command, never in the repo)
+5. Install Caddy, point it at `<your-ip-with-dashes>.nip.io`, reverse-proxy to `localhost:8080` — Caddy gets a free real HTTPS certificate automatically
+6. Smoke test: `https://<your-ip>.nip.io/api/health`, then a full recommendation flow
+7. **Budget alert (required by the brief):** AWS Console → **Billing → Budgets → Create budget** → Cost budget → $5/month → email alert at 80%
 
 ### Notes / honest limitations
 
-- Session state is **in-memory**: a container restart or scale-out loses active
-  conversations. Fine at this scale; the report should name this as a deliberate
+- Session state is **in-memory**: a container restart loses active
+  conversations. Fine at this scale; the report names this as a deliberate
   trade-off (a Redis/DynamoDB session store is the production path).
-- App Runner may run multiple instances if scaled; keep max instances = 1 so
-  every request hits the same in-memory store.
+- Only **one** instance/container runs, by design — matches the in-memory session store.
+- 750 free hours/month covers one instance running continuously all month; no
+  need to stop/start it between demos (see `docs/DEPLOYMENT.md` §10).
 
 ## Project structure
 

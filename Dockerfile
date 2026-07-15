@@ -10,8 +10,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY app ./app
 COPY static ./static
 
-# App Runner's default port
 EXPOSE 8080
 
-# ANTHROPIC_API_KEY is injected at runtime (App Runner env config / docker run -e)
+# GEMINI_API_KEY is injected at runtime (docker run -e, never baked into the image)
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]
